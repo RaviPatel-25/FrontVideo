@@ -9,7 +9,7 @@
       font-family: Arial, sans-serif;
       padding: 30px;
       text-align: center;
-      background: #f8f8f8;
+      background: #f9f9f9;
     }
     input[type="file"] {
       padding: 10px;
@@ -35,6 +35,11 @@
     #status {
       margin-top: 20px;
       font-weight: bold;
+    }
+    #status.error {
+      color: red;
+    }
+    #status.success {
       color: green;
     }
   </style>
@@ -43,23 +48,19 @@
 
   <h1>Upload a Video</h1>
 
-  <!-- Upload Form -->
   <form id="uploadForm">
     <input type="file" name="file" id="fileInput" accept="video/*" required />
     <br><br>
     <button type="submit">Upload</button>
   </form>
 
-  <!-- Status Message -->
   <h2 id="status"></h2>
 
-  <!-- Video Player -->
   <video id="videoPlayer" controls></video>
 
-  <!-- hls.js from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
-    const BASE_URL = "https://uploadvideo-chs7.onrender.com"; // 🔁 Change this to your backend URL if needed
+    const BASE_URL = "http://localhost:8000"; // ✅ Change to your backend URL
 
     const form = document.getElementById("uploadForm");
     const statusText = document.getElementById("status");
@@ -68,6 +69,7 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       statusText.textContent = "Uploading and processing video...";
+      statusText.className = "";
       const fileInput = document.getElementById("fileInput");
 
       const formData = new FormData();
@@ -79,8 +81,15 @@
           body: formData
         });
 
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Server responded with ${response.status}: ${errorText}`);
+        }
+
         const data = await response.json();
+
         statusText.textContent = data.message;
+        statusText.className = "success";
 
         const videoUrl = data.videoUrl;
 
@@ -92,11 +101,13 @@
           videoPlayer.src = videoUrl;
         } else {
           statusText.textContent = "Your browser does not support HLS playback.";
+          statusText.className = "error";
         }
 
       } catch (error) {
         console.error("Error:", error);
-        statusText.textContent = "Upload failed. See console for details.";
+        statusText.textContent = "❌ " + error.message;
+        statusText.className = "error";
       }
     });
   </script>
