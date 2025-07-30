@@ -3,30 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Video Upload & HLS Stream</title>
+  <title>Upload Video & Stream (HLS)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-6">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
 
-  <div class="w-full max-w-xl bg-white shadow-lg rounded-lg p-6">
-    <h1 class="text-2xl font-bold text-center mb-6 text-blue-600">Upload & Stream Video (HLS)</h1>
+  <div class="w-full max-w-2xl bg-white shadow-xl rounded-lg p-8">
+    <h1 class="text-3xl font-bold text-center mb-6 text-blue-600">🎬 Upload & Stream Video</h1>
 
     <!-- Upload Form -->
-    <form id="uploadForm" class="flex flex-col items-center space-y-4">
-      <input type="file" name="file" id="fileInput" accept="video/*"
-        class="border border-gray-300 rounded p-2 w-full" required />
+    <form id="uploadForm" class="space-y-6">
+      <div>
+        <label for="fileInput" class="block text-lg font-medium text-gray-700 mb-2">Select a video to upload:</label>
+        <input type="file" id="fileInput" name="file" accept="video/*" required
+               class="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </div>
+
       <button type="submit"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
-        Upload
+              class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition">
+        Upload Video
       </button>
     </form>
 
     <!-- Status Message -->
-    <p id="status" class="text-center mt-4 font-medium"></p>
+    <p id="status" class="text-center mt-6 font-medium"></p>
 
     <!-- Video Player -->
-    <video id="videoPlayer" controls class="w-full mt-6 rounded hidden"></video>
+    <div class="mt-6">
+      <video id="videoPlayer" controls class="w-full rounded-lg hidden"></video>
+    </div>
   </div>
 
   <script>
@@ -38,8 +44,8 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      statusText.textContent = "Uploading and processing video...";
-      statusText.className = "text-yellow-500 text-center mt-4 font-medium";
+      statusText.textContent = "⏳ Uploading and processing video...";
+      statusText.className = "text-yellow-600 text-center mt-6 font-medium";
       videoPlayer.classList.add("hidden");
 
       const fileInput = document.getElementById("fileInput");
@@ -59,7 +65,7 @@
 
         const data = await response.json();
         statusText.textContent = data.message;
-        statusText.className = "text-green-600 text-center mt-4 font-medium";
+        statusText.className = "text-green-600 text-center mt-6 font-medium";
 
         const videoUrl = data.videoUrl;
 
@@ -77,7 +83,7 @@
 
       } catch (error) {
         statusText.textContent = "❌ " + error.message;
-        statusText.className = "text-red-600 text-center mt-4 font-medium";
+        statusText.className = "text-red-600 text-center mt-6 font-medium";
       }
     });
   </script>
